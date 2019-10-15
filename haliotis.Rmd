@@ -1,0 +1,95 @@
+---
+title: "Haliotis"
+author: "Jonathan Nguyen"
+date: "14/10/2019"
+output: html_document
+---
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+library(tidyverse)
+```
+
+
+```{r read csv}
+haliotis_read <- read_csv('haliotis.csv')
+haliotis <- filter(haliotis_read, Sex != "I")
+haliotis
+```
+```{r train et test}
+problem <- haliotis[1,] #la première rangée seulement
+training <- haliotis[-1,] #tous sauf la première rangée
+problem
+
+```
+http://www.r-tutor.com/r-introduction/data-frame/data-frame-row-slice
+https://bookdown.org/ndphillips/YaRrr/slicing-dataframes.html
+
+```{r summary}
+long_training <- training %>% 
+  gather(variable, value, Length:Height, -Diameter, Whole_weight) #gather les valeurs des colonnes length, height et whole_weight, mais pas diameter
+
+summary_statistics <- long_training %>% 
+  group_by(Sex, variable) %>% 
+  summarize(mean = mean(value), sd = sd(value))
+
+summary_statistics
+```
+https://garrettgman.github.io/tidying/
+
+```{r}
+male_height <- filter(summary_statistics, Sex == 'M', variable == 'Height')
+male_height
+```
+
+```{r dnorm}
+proba_height_male <- dnorm(
+  problem$'Height',
+  male_height$mean,
+  male_height$sd
+)
+
+proba_height_male #likelihood (densité de probabilité) d'avoir problem$'Height' sachant M
+```
+
+```{r function}
+proba_class_knowing_feature <- function(class_name, feature_name, summary, problem){
+  class_feature <- subset(summary,(Sex == class_name) & (variable == feature_name)) #cherche la bonen rangée dans summary_statistics
+  
+  proba_feature_class <- dnorm(
+    as.double(problem[1, feature_name]), #as.double est nécessaire sinon retourne valeur non-numérique; donne valeur dans la colonne de feature_anme
+    class_feature$mean,
+    class_feature$sd)
+  return(proba_feature_class)
+}
+
+proba_class_knowing_feature("M", "Height", summary_statistics, problem)
+```
+https://www.statmethods.net/management/subset.html
+
+```{r}
+proba_class_feature <- summary_statistics %>% 
+  mutate(id = map2_dbl(Sex, variable, proba_class_knowing_feature, #permet de d'avoir le likelihood pour toutes les variables de problem
+                       summary = summary_statistics, problem = problem))
+
+proba_class_feature
+```
+Visuellement sans effectuer la multiplication des toutes les ids, notre classificatuer mettrait notre test dans M.
+
+```{r}
+table(training$Sex)
+```
+```{r}
+proba_class_feature %>% 
+ knitr::kable(.) #génère une table
+
+as.character(problem$Sex)
+```
+
+#Bibliotgraphie
