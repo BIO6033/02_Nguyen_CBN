@@ -18,7 +18,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 ```
 
-#Le jeu de données
+# Le jeu de données
 
 Le jeu de données utilisé provient du UC Irvine Machien Learning Repository et le propriétaire initial est le Department of Primary Industry and Fisheries, Tasmania. Ce jeu comporte de 4177 observations et 9 variables.
 
@@ -32,7 +32,7 @@ haliotis
 ```
 
 
-#Training et test
+# Training et test
 Le découpage a été utilsé pour séparé le jeu de données en 2. Une observation qui servira de test pour le classifieur et le restant du jeu pour construire le classifieur.
 
 ```{r train et test}
@@ -43,7 +43,7 @@ problem
 ```
 
 
-#Sommaire
+# Sommaire
 
 Les fonctions gather, group_by et summarize ont été utilisées pour déterminer la moyenne et l'écart type de 3 variables pour 'F' et 'M'. Ceci sera utile lorsqu'on travaillera avec la distribution normale.
 ```{r summary}
@@ -58,7 +58,7 @@ summary_statistics
 ```
 
 
-#Un test préliminaire
+# Un test préliminaire
 
 On filter une variable 'Meight' chez 'M' et sa moyenne et son écart-type. C'est 2 derniers servent d'argument pour dnorm qui donne la densité de probabilité, le likelihood.
 ```{r}
@@ -76,7 +76,7 @@ proba_height_male <- dnorm(
 proba_height_male #likelihood (densité de probabilité) d'avoir problem$'Height' sachant M
 ```
 
-#Construction d'une fonction
+# Construction d'une fonction
 Une fonction est codée prenant comme arguments le sex, la variable, le tableau sommaire, et l'observation test.
 ```{r function}
 proba_class_knowing_feature <- function(class_name, feature_name, summary, problem){
@@ -93,7 +93,7 @@ proba_class_knowing_feature("M", "Height", summary_statistics, problem)
 ```
 
 
-#Généralisation de la fonction avec map2_dbl
+# Généralisation de la fonction avec map2_dbl
 Ceci permet d'avoir le likehood pour toutes les variables de 'problem'.
 
 ```{r}
@@ -114,7 +114,7 @@ table(training$Sex)
 F: 
 - prévalence: 0.46
 2.88 x 1.64 x 0.43 x 0.46 = 0.93
-M:
+<br> M:
 - prévalence: 0.54
 3.08 x 2.27 x 0.51 x 0.46 = 1.93
 
@@ -125,7 +125,7 @@ problem
 ```
 
 
-#Bibliotgraphie
+# Bibliotgraphie
 https://archive.ics.uci.edu/ml/datasets/Abalone
 http://www.r-tutor.com/r-introduction/data-frame/data-frame-row-slice
 https://bookdown.org/ndphillips/YaRrr/slicing-dataframes.html
